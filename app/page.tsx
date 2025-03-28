@@ -7,6 +7,7 @@ import { TimestampResults } from "@/components/TimestampResults";
 import { SrtEntry } from "@/lib/srt-parser";
 import { Button } from "@/components/ui/button";
 import { Particles } from "@/components/magicui/particles";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
 
 const doto = Doto({ weight: "900", subsets: ["latin"] });
 
@@ -171,7 +172,7 @@ export default function Home() {
         </main>
 
         {/* Footer */}
-        <footer className="mt-auto pt-8 border-t border-gray-200 dark:border-gray-800 text-center text-gray-500 dark:text-gray-400 text-sm">
+        <footer className="mt-auto pt-8 border-t border-gray-200 dark:border-gray-800 text-center text-gray-500 dark:text-gray-400 text-sm relative">
           <p className="flex items-center justify-center gap-3">
             Ray Fernando
             <a href="https://twitter.com/RayFernando1337" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-blue-500 transition-colors" aria-label="Twitter/X Profile">
@@ -186,6 +187,11 @@ export default function Home() {
             </a>
           </p>
           <p className="mt-1"> {new Date().getFullYear()} SRT Timestamp Generator</p>
+          
+          {/* Theme Toggle Button */}
+          <div className="absolute bottom-2 right-2 md:bottom-0 md:right-0">
+            <ThemeToggle />
+          </div>
         </footer>
       </div>
     </div>
