@@ -23,10 +23,10 @@ export function TimestampResults({ isLoading, content }: TimestampResultsProps) 
         setProgress((prev) => {
           // Keep progress between 0-95% while loading
           // We'll set it to 100% when loading is complete
-          const newValue = prev + Math.random() * 5;
+          const newValue = prev + Math.random() * 15;
           return Math.min(newValue, 95);
         });
-      }, 500);
+      }, 200);
 
       return () => {
         clearInterval(interval);
