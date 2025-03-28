@@ -6,6 +6,7 @@ import { SrtUploader } from "@/components/SrtUploader";
 import { TimestampResults } from "@/components/TimestampResults";
 import { SrtEntry } from "@/lib/srt-parser";
 import { Button } from "@/components/ui/button";
+import { Particles } from "@/components/magicui/particles";
 
 const doto = Doto({ weight: "900", subsets: ["latin"] });
 
@@ -69,20 +70,52 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-4 md:py-8 flex flex-col">
-      <div className="container max-w-5xl mx-auto px-4 flex flex-col flex-grow">
+    <div className="min-h-screen bg-white dark:bg-black py-4 md:py-8 flex flex-col relative overflow-hidden">
+      {/* Add a subtle gradient background */}
+      <div className="absolute inset-0 bg-gradient-to-b from-indigo-50/50 to-white dark:from-indigo-950/20 dark:to-black"></div>
+      
+      {/* Dark mode particles with higher visibility */}
+      <div className="hidden dark:block absolute inset-0 z-0">
+        <Particles
+          className="absolute inset-0"
+          quantity={50}
+          staticity={5}
+          color="#a855f7"
+          ease={50}
+          size={0.4}
+          vy={0.1}
+          vx={0.1}
+          refresh={true}
+        />
+      </div>
+      
+      {/* Light mode particles with higher visibility */}
+      <div className="dark:hidden absolute inset-0 z-0">
+        <Particles
+          className="absolute inset-0"
+          quantity={50}
+          staticity={5}
+          color="#f44336"
+          ease={50}
+          size={0.4}
+          vy={0.1}
+          vx={0.1}
+          refresh={true}
+        />
+      </div>
+      <div className="container max-w-5xl mx-auto px-4 flex flex-col flex-grow relative z-10">
         {/* Header */}
-        <header className="flex flex-col items-center mb-8 md:mb-12">
-          <div className="flex items-center gap-3 mb-6">
-            <h1 className={`text-6xl text-center font-bold ${doto.className}`}>SRT Timestamp Generator</h1>
+        <header className="flex flex-col items-center mb-4 md:mb-6">
+          <div className="flex items-center gap-3 mb-4">
+            <h1 className={`text-5xl text-center font-bold ${doto.className}`}>SRT Timestamp Generator</h1>
           </div>
           <p className="text-center text-gray-600 dark:text-gray-400 max-w-2xl">
             Upload a .srt file to generate meaningful timestamps for YouTube videos.
           </p>
         </header>
 
-        {/* Main Content */}
-        <main className="flex flex-col items-center gap-6 md:gap-8 w-full flex-grow">
+        {/* Main Content - added justify-center to center content vertically */}
+        <main className="flex flex-col items-center justify-center gap-6 md:gap-8 w-full flex-grow my-auto">
           {/* Step 1: File Upload (only show when not processing and no results) */}
           {!isProcessing && !generatedContent && (
             <SrtUploader 
@@ -128,7 +161,7 @@ export default function Home() {
                     setGeneratedContent("");
                   }}
                   variant="outline"
-                  className="mt-6"
+                  className="mt-6 mb-8 md:mb-12"
                 >
                   Process Another File
                 </Button>
