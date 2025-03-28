@@ -72,40 +72,39 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-black py-4 md:py-8 flex flex-col relative overflow-hidden">
-      {/* Add a subtle gradient background */}
-      <div className="absolute inset-0 bg-gradient-to-b from-indigo-50/50 to-white dark:from-indigo-950/20 dark:to-black"></div>
+    <div className="min-h-screen py-4 md:py-8 flex flex-col relative overflow-hidden">
+      {/* Ghibli theme - transparent background to allow the GhibliBackground to show through */}
 
-      {/* Dark mode particles with higher visibility */}
-      <div className="hidden dark:block absolute inset-0 z-0">
+      {/* Just a few subtle stars for Ghibli theme in dark mode */}
+      <div className="hidden dark:block absolute inset-0 z-1 pointer-events-none opacity-40">
         <Particles
           className="absolute inset-0"
-          quantity={50}
-          staticity={5}
-          color="#a855f7"
-          ease={50}
-          size={0.4}
-          vy={0.1}
-          vx={0.1}
+          quantity={25}
+          staticity={30}
+          color="#ffffff"
+          ease={100}
+          size={0.2}
+          vy={0.02}
+          vx={0.02}
           refresh={true}
         />
       </div>
 
-      {/* Light mode particles with higher visibility */}
-      <div className="dark:hidden absolute inset-0 z-0">
+      {/* Light mode - Just a few subtle bird-like particles */}
+      <div className="dark:hidden absolute inset-0 z-1 pointer-events-none opacity-20">
         <Particles
           className="absolute inset-0"
-          quantity={50}
-          staticity={5}
-          color="#a855f7"
-          ease={50}
-          size={0.4}
-          vy={0.1}
-          vx={0.1}
+          quantity={15}
+          staticity={15}
+          color="#5d4037"
+          ease={80}
+          size={0.15}
+          vy={0.3}
+          vx={0.3}
           refresh={true}
         />
       </div>
-      <div className="container max-w-5xl mx-auto px-4 flex flex-col flex-grow relative z-10">
+      <div className="container max-w-5xl mx-auto px-4 flex flex-col flex-grow relative z-20">
         {/* Header */}
         <header className="flex flex-col items-center mb-4 md:mb-6">
           <div className="flex items-center gap-3 mb-4">

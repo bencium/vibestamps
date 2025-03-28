@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Doto } from "next/font/google";
 import { ThemeProvider } from "next-themes";
+import GhibliBackground from "@/components/ui/ghibli-background";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -35,6 +36,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} ${doto.variable} antialiased`}
       >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <GhibliBackground />
           {children}
         </ThemeProvider>
       </body>
