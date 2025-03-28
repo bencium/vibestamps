@@ -8,6 +8,7 @@ import { SrtEntry } from "@/lib/srt-parser";
 import { Button } from "@/components/ui/button";
 import { Particles } from "@/components/magicui/particles";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
+import { SparklesText } from "@/components/magicui/sparkles-text";
 
 const doto = Doto({ weight: "900", subsets: ["latin"] });
 
@@ -222,7 +223,11 @@ export default function Home() {
 
         {/* Footer */}
         <footer className="mt-auto pt-8 pb-8 text-gray-500 dark:text-gray-400 text-sm flex flex-col">
-          <div className="flex items-center justify-end w-full">
+          <div className="flex items-center justify-between w-full">
+            {/* Gemini 2.5 Pro attribution */}
+            <div className="opacity-70 hover:opacity-100 transition-opacity">
+              <SparklesText text="Gemini 2.5 Pro" className="text-base" sparklesCount={5} />
+            </div>
             {/* Theme Toggle Button */}
             <div className="absolute bottom-0 right-4 md:bottom-8 md:right-4">
               <ThemeToggle />
