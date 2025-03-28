@@ -1,14 +1,14 @@
 "use client";
 
-import { useState } from "react";
-import { Doto } from "next/font/google";
+import { Particles } from "@/components/magicui/particles";
+import { SparklesText } from "@/components/magicui/sparkles-text";
 import { SrtUploader } from "@/components/SrtUploader";
 import { TimestampResults } from "@/components/TimestampResults";
-import { SrtEntry } from "@/lib/srt-parser";
 import { Button } from "@/components/ui/button";
-import { Particles } from "@/components/magicui/particles";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
-import { SparklesText } from "@/components/magicui/sparkles-text";
+import { SrtEntry } from "@/lib/srt-parser";
+import { Doto } from "next/font/google";
+import { useState } from "react";
 
 const doto = Doto({ weight: "900", subsets: ["latin"] });
 

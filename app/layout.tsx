@@ -21,7 +21,7 @@ const doto = Doto({
 });
 
 export const metadata: Metadata = {
-  title: "SRT Timestamp Generator",
+  title: "Timestamp Generator for YouTube",
   description: "Upload a .srt file to generate meaningful timestamps for YouTube videos",
 };
 

@@ -1,10 +1,48 @@
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
-import { streamText } from "ai";
+import { streamText, wrapLanguageModel, type LanguageModelV1Middleware } from "ai";
 import { NextResponse } from "next/server";
 
 // Initialize the Google Generative AI provider
-const google = createGoogleGenerativeAI({
+const googleBase = createGoogleGenerativeAI({
   apiKey: process.env.GOOGLE_API_KEY || "",
+});
+
+// Create a fallback middleware
+const fallbackMiddleware: LanguageModelV1Middleware = {
+  wrapGenerate: async ({ doGenerate, params }) => {
+    try {
+      return await doGenerate();
+    } catch (error) {
+      console.warn("Primary model failed, falling back to gemini-1.5-pro:", error);
+
+      // Create the fallback model
+      const fallbackModel = googleBase("gemini-1.5-pro");
+
+      // Call the fallback model with the same parameters
+      return await fallbackModel.doGenerate(params);
+    }
+  },
+
+  wrapStream: async ({ doStream, params }) => {
+    try {
+      return await doStream();
+    } catch (error) {
+      console.warn("Primary model failed in streaming, falling back to gemini-1.5-pro:", error);
+
+      // Create the fallback model
+      const fallbackModel = googleBase("gemini-1.5-pro");
+
+      // Call the fallback model with the same parameters
+      return await fallbackModel.doStream(params);
+    }
+  },
+};
+
+// Create our primary model with fallback middleware
+const primaryModel = googleBase("gemini-2.5-pro-exp-03-25");
+const modelWithFallback = wrapLanguageModel({
+  model: primaryModel,
+  middleware: fallbackMiddleware,
 });
 
 export async function POST(request: Request) {
@@ -37,15 +75,14 @@ export async function POST(request: Request) {
       Do not add any markdown formatting, headings, or additional text - just the timestamps in the format shown above.
     `;
 
-    // Use streamText function from the AI SDK with Google Gemini model
+    // Use the model with fallback middleware
     const { textStream } = streamText({
-      model: google("gemini-1.5-pro"),
+      model: modelWithFallback,
       prompt: `${systemPrompt}\n\nHere is the transcript content from an SRT file. Please analyze it and generate meaningful timestamps with summaries:\n\n${srtContent}`,
       temperature: 0.7,
       maxTokens: 1500,
     });
 
-    // Return a proper streaming response
     return new Response(textStream);
   } catch (error) {
     console.error("Error processing request:", error);
