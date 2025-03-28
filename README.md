@@ -31,6 +31,59 @@ SRT Timestamp Generator is a modern web application that simplifies the process 
 4. **Generation**: The AI analyzes the dialogue and generates structured timestamps or summaries
 5. **Display**: Results are streamed back to the UI and presented in a readable format
 
+## Getting Started
+
+### Prerequisites
+
+- [Bun](https://bun.sh/) installed on your system (v1.0.0 or newer)
+- Google Gemini API key (see below for instructions)
+- Node.js 18.17.0 or later
+
+### Setting Up the Google Gemini API Key
+
+1. Visit [Google AI Studio](https://makersuite.google.com/app/apikey)
+2. Sign in with your Google account if prompted
+3. Click on "Get API Key" in the left menu
+4. Click "Create API Key" button
+5. Copy your API key - **important**: this is the only time you'll see this key, so be sure to save it securely
+6. Never share your API key or commit it to version control
+
+### Installation
+
+1. Clone the repository:
+
+   ```bash
+   git clone https://github.com/yourusername/srt-timestamp-generator.git
+   cd srt-timestamp-generator
+   ```
+
+2. Install dependencies:
+
+   ```bash
+   bun install
+   ```
+
+3. Create a `.env.local` file in the project root:
+
+   ```
+   GOOGLE_API_KEY=your_api_key_here
+   ```
+
+4. Run the development server:
+
+   ```bash
+   bun dev
+   ```
+
+5. Open [http://localhost:3000](http://localhost:3000) with your browser to see the application.
+
+## Usage
+
+1. Upload an SRT subtitle file by clicking the upload area or dragging and dropping
+2. Wait for the file to be processed and analyzed by the AI
+3. View the generated timestamps that highlight key moments in the content
+4. Copy the timestamps to use in your YouTube descriptions or video editing software
+
 ## Design System
 
 We are using **shadcn/ui** for our component library. Components are added individually as needed.
@@ -56,31 +109,6 @@ The application uses the Vercel AI SDK to communicate with Google's Gemini model
 3. **Environment Variables:** Store sensitive information like API keys in environment variables (`.env.local`) and do not commit them to version control.
 4. **Code Style:** Follow standard TypeScript and React best practices. Ensure code is formatted (consider adding a formatter like Prettier later).
 
-## Getting Started
-
-### Prerequisites
-
-- Bun installed on your system
-- Google AI Gemini API key
-
-### Setup
-
-1. Clone the repository
-2. Install dependencies:
-   ```bash
-   bun install
-   ```
-3. Create a `.env.local` file with your Google Gemini API key:
-   ```
-   GOOGLE_API_KEY=your_api_key_here
-   ```
-4. Run the development server:
-   ```bash
-   bun dev
-   ```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the application.
-
 ## Project Structure
 
 - `/app`: Next.js application code
@@ -88,6 +116,12 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
   - `/components`: Reusable UI components
   - `/lib`: Utility functions and helpers
 - `/public`: Static assets
+
+## Troubleshooting
+
+- **API Key Issues**: If you receive authentication errors, double-check your API key in the `.env.local` file.
+- **File Upload Problems**: Make sure you're using a valid SRT file format.
+- **Bun Errors**: Ensure you have Bun installed correctly. Run `bun --version` to verify.
 
 ## Learn More
 
@@ -98,8 +132,15 @@ To learn more about the technologies used in this project:
 - [Google Gemini API](https://ai.google.dev/docs) - Google's multimodal AI model
 - [shadcn/ui](https://ui.shadcn.com/) - UI component library
 
-## Deploy on Vercel
+## Sponsorship
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+This project is currently seeking sponsors to help with:
 
-Check out the [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Hosting costs for deploying the application
+- Google Gemini API credits to support processing larger volumes of SRT files
+
+If you're interested in sponsoring this project or would like to discuss partnership opportunities, please reach out to me via [X fka Twitter @RayFernando1337](https://x.com/Rayfernando1337).
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
