@@ -57,8 +57,8 @@ Visit [vibestamps.com](https://vibestamps.com) to try it out!
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/RayFernando1337/timestamps-chill.git
-   cd timestamps-chill
+   git clone https://github.com/RayFernando1337/vibestamps.git
+   cd vibestamps
    ```
 
 2. Install dependencies:
