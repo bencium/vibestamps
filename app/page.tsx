@@ -109,7 +109,7 @@ export default function Home() {
           <div className="flex items-center gap-3 mb-4">
             <h1 className={`text-5xl text-center font-bold ${doto.className}`}>SRT Timestamp Generator</h1>
           </div>
-          <p className="text-center text-gray-600 dark:text-gray-400 max-w-2xl">
+          <p className="text-center text-gray-600 dark:text-gray-400 max-w-2xl px-16 md:px-0">
             Upload a .srt file to generate meaningful timestamps for YouTube videos.
           </p>
         </header>
