@@ -33,3 +33,4 @@ We are using **shadcn/ui** for our component library. Components are added indiv
 2.  **UI Components:** Prefer components from `shadcn/ui` where possible. Install them using the command above.
 3.  **Environment Variables:** Store sensitive information like API keys in environment variables (`.env.local`) and do not commit them to version control.
 4.  **Code Style:** Follow standard TypeScript and React best practices. Ensure code is formatted (consider adding a formatter like Prettier later).
+5.  **Tailwind CSS v4:** Use Tailwind CSS v4 for styling. Refer to the [Tailwind CSS documentation](https://tailwindcss.com/docs) for more information.
