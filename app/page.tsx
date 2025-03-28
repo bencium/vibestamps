@@ -86,26 +86,13 @@ export default function Home() {
         <main className="flex flex-col items-center gap-6 md:gap-8 w-full">
           {/* Step 1: File Upload (only show when not processing and no results) */}
           {!isProcessing && !generatedContent && (
-            <>
-              <SrtUploader onContentExtracted={handleContentExtracted} disabled={isProcessing} />
-              
-              {/* Process Button (only show when file is uploaded) */}
-              {srtContent && (
-                <div className="flex flex-col items-center gap-2 animate-in fade-in duration-300">
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
-                    {srtEntries.length} entries found in the SRT file
-                  </p>
-                  <Button
-                    onClick={processWithAI}
-                    className="w-full max-w-xs"
-                    disabled={isProcessing}
-                    size="lg"
-                  >
-                    Generate Timestamps
-                  </Button>
-                </div>
-              )}
-            </>
+            <SrtUploader 
+              onContentExtracted={handleContentExtracted} 
+              onProcessFile={processWithAI}
+              disabled={isProcessing} 
+              entriesCount={srtEntries.length}
+              hasContent={!!srtContent}
+            />
           )}
 
           {/* Error Display (show at any step if there's an error) */}

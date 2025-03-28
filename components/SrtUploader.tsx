@@ -6,10 +6,13 @@ import { parseSrtContent, extractTextFromSrt, SrtEntry } from '@/lib/srt-parser'
 
 interface SrtUploaderProps {
   onContentExtracted: (content: string, entries: SrtEntry[]) => void;
+  onProcessFile: () => void;
   disabled: boolean;
+  entriesCount: number;
+  hasContent: boolean;
 }
 
-export function SrtUploader({ onContentExtracted, disabled }: SrtUploaderProps) {
+export function SrtUploader({ onContentExtracted, onProcessFile, disabled, entriesCount, hasContent }: SrtUploaderProps) {
   const [fileName, setFileName] = useState<string>('');
   const [error, setError] = useState<string>('');
   const [isDragging, setIsDragging] = useState(false);
@@ -40,6 +43,13 @@ export function SrtUploader({ onContentExtracted, disabled }: SrtUploaderProps) 
 
       const extractedText = extractTextFromSrt(entries);
       onContentExtracted(extractedText, entries);
+      
+      // Auto-process after a short delay to allow UI to update
+      setTimeout(() => {
+        if (!disabled) {
+          onProcessFile();
+        }
+      }, 500);
     } catch (err) {
       console.error('Error reading file:', err);
       setError('Failed to read the file. Please try again.');
@@ -78,40 +88,60 @@ export function SrtUploader({ onContentExtracted, disabled }: SrtUploaderProps) 
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}>
       <CardContent className="flex flex-col items-center gap-4 p-4">
-        <div className="text-center mb-2">
-          <h2 className="text-xl font-semibold mb-2">Upload SRT File</h2>
-          <p className="text-gray-500 dark:text-gray-400 text-sm">
-            Drag & drop your .srt file here or click to browse
-          </p>
-        </div>
-        
-        <Input
-          ref={fileInputRef}
-          type="file"
-          accept=".srt"
-          onChange={handleFileChange}
-          className="hidden"
-          disabled={disabled}
-        />
-        
-        <Button 
-          onClick={triggerFileInput}
-          className="w-full max-w-xs"
-          disabled={disabled}
-          size="lg"
-        >
-          Select SRT File
-        </Button>
+        {!hasContent && (
+          <>
+            <div className="text-center mb-2">
+              <h2 className="text-xl font-semibold mb-2">Upload SRT File</h2>
+              <p className="text-gray-500 dark:text-gray-400 text-sm">
+                Drag & drop your .srt file here or click to browse
+              </p>
+            </div>
+            
+            <Input
+              ref={fileInputRef}
+              type="file"
+              accept=".srt"
+              onChange={handleFileChange}
+              className="hidden"
+              disabled={disabled}
+            />
+            
+            <Button 
+              onClick={triggerFileInput}
+              className="w-full max-w-xs"
+              disabled={disabled}
+              size="lg"
+            >
+              Select SRT File
+            </Button>
+          </>
+        )}
         
         {fileName && (
-          <div className="mt-2 text-sm flex items-center gap-2 bg-gray-50 dark:bg-gray-800 p-2 rounded-md">
+          <div className="mt-2 text-sm flex items-center gap-2 bg-gray-50 dark:bg-gray-800 p-2 rounded-md w-full">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-green-500"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
             <span className="font-medium">Selected file:</span> {fileName}
           </div>
         )}
         
+        {hasContent && !disabled && (
+          <div className="flex flex-col items-center gap-2 animate-in fade-in duration-300 w-full">
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              {entriesCount} entries found in the SRT file
+            </p>
+            <Button
+              onClick={onProcessFile}
+              className="w-full max-w-xs"
+              disabled={disabled}
+              size="lg"
+            >
+              Generate Timestamps
+            </Button>
+          </div>
+        )}
+        
         {error && (
-          <div className="mt-2 text-sm flex items-start gap-2 bg-red-50 dark:bg-red-900/20 p-2 rounded-md border border-red-200 dark:border-red-800">
+          <div className="mt-2 text-sm flex items-start gap-2 bg-red-50 dark:bg-red-900/20 p-2 rounded-md border border-red-200 dark:border-red-800 w-full">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-red-500 mt-0.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
             <span className="text-red-600 dark:text-red-400">{error}</span>
           </div>
