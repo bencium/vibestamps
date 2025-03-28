@@ -145,7 +145,7 @@ export default function Home() {
           <p className="text-center text-gray-600 dark:text-gray-400 max-w-2xl px-16 md:px-0 flex items-center justify-center gap-2 py-2">
             Ray Fernando
             <a
-              href="https://twitter.com/RayFernando1337"
+              href="https://rfer.me/xprofilevshedr"
               target="_blank"
               rel="noopener noreferrer"
               className="text-gray-500 hover:text-blue-500 transition-colors"
@@ -162,7 +162,7 @@ export default function Home() {
               </svg>
             </a>
             <a
-              href="https://youtube.com/@RayFernando1337"
+              href="https://rfer.me/RayYouTube-rvs"
               target="_blank"
               rel="noopener noreferrer"
               className="text-gray-500 hover:text-red-500 transition-colors"
@@ -179,7 +179,7 @@ export default function Home() {
               </svg>
             </a>
             <a
-              href="https://github.com/RayFernando1337/timestamps-chill"
+              href="https://rfer.me/rayvibestamps"
               target="_blank"
               rel="noopener noreferrer"
               className="text-gray-500 hover:text-yellow-500 transition-colors flex items-center gap-1"
