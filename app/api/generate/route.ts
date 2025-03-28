@@ -13,10 +13,10 @@ const fallbackMiddleware: LanguageModelV1Middleware = {
     try {
       return await doGenerate();
     } catch (error) {
-      console.warn("Primary model failed, falling back to gemini-1.5-pro:", error);
+      console.warn("Primary model failed, falling back to gemini-2.5-pro-exp-03-25:", error);
 
       // Create the fallback model
-      const fallbackModel = googleBase("gemini-1.5-pro");
+      const fallbackModel = googleBase("gemini-2.5-pro-exp-03-25");
 
       // Call the fallback model with the same parameters
       return await fallbackModel.doGenerate(params);
@@ -27,10 +27,13 @@ const fallbackMiddleware: LanguageModelV1Middleware = {
     try {
       return await doStream();
     } catch (error) {
-      console.warn("Primary model failed in streaming, falling back to gemini-1.5-pro:", error);
+      console.warn(
+        "Primary model failed in streaming, falling back to gemini-2.5-pro-exp-03-25:",
+        error
+      );
 
       // Create the fallback model
-      const fallbackModel = googleBase("gemini-1.5-pro");
+      const fallbackModel = googleBase("gemini-2.5-pro-exp-03-25");
 
       // Call the fallback model with the same parameters
       return await fallbackModel.doStream(params);
@@ -39,7 +42,7 @@ const fallbackMiddleware: LanguageModelV1Middleware = {
 };
 
 // Create our primary model with fallback middleware
-const primaryModel = googleBase("gemini-2.5-pro-exp-03-25");
+const primaryModel = googleBase("gemini-1.5-pro");
 const modelWithFallback = wrapLanguageModel({
   model: primaryModel,
   middleware: fallbackMiddleware,
