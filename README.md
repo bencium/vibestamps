@@ -1,10 +1,12 @@
-# SRT Timestamp Generator
+# Vibestamps
 
-![SRT Timestamp Generator](https://github.com/user-attachments/assets/33cea444-249b-4793-bf42-6c50619528c9)
+![Vibestamps](https://github.com/user-attachments/assets/33cea444-249b-4793-bf42-6c50619528c9)
 
 ## Overview
 
-SRT Timestamp Generator is a modern web application that simplifies the process of extracting valuable information from subtitle files. The app allows users to upload SubRip Text (`.srt`) files and leverages Google's Gemini AI model to generate meaningful timestamps, chapters, or summaries based on the content.
+Vibestamps is a modern web application that simplifies the process of extracting valuable information from subtitle files. The app allows users to upload SubRip Text (`.srt`) files and leverages Google's Gemini AI model to generate meaningful timestamps, chapters, or summaries based on the content.
+
+Visit [vibestamps.com](https://vibestamps.com) to try it out!
 
 ## Features
 
@@ -55,8 +57,8 @@ SRT Timestamp Generator is a modern web application that simplifies the process 
 1. Clone the repository:
 
    ```bash
-   git clone https://github.com/yourusername/srt-timestamp-generator.git
-   cd srt-timestamp-generator
+   git clone https://github.com/RayFernando1337/timestamps-chill.git
+   cd timestamps-chill
    ```
 
 2. Install dependencies:

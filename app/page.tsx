@@ -136,7 +136,7 @@ export default function Home() {
         <header className="flex flex-col items-center mb-4 md:mb-6">
           <div className="flex items-center gap-3 mb-4">
             <div className={`text-5xl md:text-7xl text-center font-bold ${doto.className}`}>
-              Timestamp Generator
+              Vibestamps
             </div>
           </div>
           <p className="text-center text-gray-600 dark:text-gray-400 max-w-2xl px-16 md:px-0">

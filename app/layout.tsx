@@ -1,7 +1,7 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono, Doto } from "next/font/google";
-import { ThemeProvider } from "next-themes";
 import GhibliBackground from "@/components/ui/ghibli-background";
+import type { Metadata } from "next";
+import { ThemeProvider } from "next-themes";
+import { Doto, Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -21,8 +21,9 @@ const doto = Doto({
 });
 
 export const metadata: Metadata = {
-  title: "Timestamp Generator for YouTube",
-  description: "Upload a .srt file to generate meaningful timestamps for YouTube videos",
+  title: "Vibestamps | Timestamp Generator for YouTube",
+  description:
+    "Vibestamps helps you upload a .srt file to generate meaningful timestamps for YouTube videos",
 };
 
 export default function RootLayout({
@@ -32,9 +33,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} ${doto.variable} antialiased`}
-      >
+      <body className={`${geistSans.variable} ${geistMono.variable} ${doto.variable} antialiased`}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <GhibliBackground />
           {children}
