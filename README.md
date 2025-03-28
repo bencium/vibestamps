@@ -1,6 +1,6 @@
 # Vibestamps
 
-![Vibestamps](https://github.com/user-attachments/assets/33cea444-249b-4793-bf42-6c50619528c9)
+![Vibestamps](https://github.com/user-attachments/assets/c3d55375-791f-4cb1-bbc6-e2d7640ad359)
 
 ## Overview
 
