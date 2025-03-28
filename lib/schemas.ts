@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { MAX_FILE_SIZE } from "./constants";
 
 // SRT Entry schema for validating individual entries
 export const srtEntrySchema = z.object({
@@ -7,9 +8,6 @@ export const srtEntrySchema = z.object({
   endTime: z.string(),
   text: z.string(),
 });
-
-// Max file size in bytes (35 KB)
-const MAX_FILE_SIZE = 35 * 1024;
 
 // SRT Content schema for validating the entire SRT content
 export const srtContentSchema = z.object({

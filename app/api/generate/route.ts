@@ -1,10 +1,8 @@
+import { MAX_FILE_SIZE } from "@/lib/constants";
 import { generateApiRequestSchema } from "@/lib/schemas";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { streamText, wrapLanguageModel, type LanguageModelV1Middleware } from "ai";
 import { NextResponse } from "next/server";
-
-// Max request size in bytes (35 KB) - maintaining consistency
-const MAX_REQUEST_SIZE = 35 * 1024;
 
 // Initialize the Google Generative AI provider
 const googleBase = createGoogleGenerativeAI({
@@ -56,9 +54,9 @@ export async function POST(request: Request) {
   try {
     // Check request size before parsing
     const contentLength = request.headers.get("content-length");
-    if (contentLength && parseInt(contentLength) > MAX_REQUEST_SIZE) {
+    if (contentLength && parseInt(contentLength) > MAX_FILE_SIZE) {
       return NextResponse.json(
-        { error: `Request too large. Maximum size is ${MAX_REQUEST_SIZE / 1024}KB` },
+        { error: `Request too large. Maximum size is ${MAX_FILE_SIZE / 1024}KB` },
         { status: 413 } // 413 Payload Too Large
       );
     }

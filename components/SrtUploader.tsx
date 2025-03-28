@@ -1,12 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { MAX_FILE_SIZE } from "@/lib/constants";
 import { srtFileSchema } from "@/lib/schemas";
 import { extractTextFromSrt, parseSrtContent, SrtEntry } from "@/lib/srt-parser";
 import { useRef, useState } from "react";
-
-// Max file size in bytes (35 KB) - maintaining consistency with lib/schemas.ts
-const MAX_FILE_SIZE = 35 * 1024;
 
 interface SrtUploaderProps {
   onContentExtracted: (content: string, entries: SrtEntry[]) => void;
