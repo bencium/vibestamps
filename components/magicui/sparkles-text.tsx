@@ -24,15 +24,15 @@ const Sparkle: React.FC<Sparkle> = ({ id, x, y, color, delay, scale }) => {
       animate={{
         opacity: [0, 1, 0],
         scale: [0, scale, 0],
-        rotate: [75, 120, 150],
+        rotate: [0, 120, 240],
       }}
-      transition={{ duration: 1.5, repeat: Infinity, delay }}
-      width="21"
-      height="21"
-      viewBox="0 0 21 21"
+      transition={{ duration: 2, repeat: Infinity, delay, ease: "easeInOut" }}
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
     >
       <path
-        d="M9.82531 0.843845C10.0553 0.215178 10.9446 0.215178 11.1746 0.843845L11.8618 2.72026C12.4006 4.19229 12.3916 6.39157 13.5 7.5C14.6084 8.60843 16.8077 8.59935 18.2797 9.13822L20.1561 9.82534C20.7858 10.0553 20.7858 10.9447 20.1561 11.1747L18.2797 11.8618C16.8077 12.4007 14.6084 12.3916 13.5 13.5C12.3916 14.6084 12.4006 16.8077 11.8618 18.2798L11.1746 20.1562C10.9446 20.7858 10.0553 20.7858 9.82531 20.1562L9.13819 18.2798C8.59932 16.8077 8.60843 14.6084 7.5 13.5C6.39157 12.3916 4.19225 12.4007 2.72023 11.8618L0.843814 11.1747C0.215148 10.9447 0.215148 10.0553 0.843814 9.82534L2.72023 9.13822C4.19225 8.59935 6.39157 8.60843 7.5 7.5C8.60843 6.39157 8.59932 4.19229 9.13819 2.72026L9.82531 0.843845Z"
+        d="M12 0C12.7333 5.2 14.9333 8.85333 19.6 10.4C14.9333 11.9467 12.7333 15.6 12 20.8C11.2667 15.6 9.06667 11.9467 4.4 10.4C9.06667 8.85333 11.2667 5.2 12 0Z"
         fill={color}
       />
     </motion.svg>
@@ -73,7 +73,7 @@ interface SparklesTextProps {
   sparklesCount?: number;
 
   /**
-   * @default "{first: '#9E7AFF', second: '#FE8BBB'}"
+   * @default "{first: '#16a34a', second: '#0ea5e9'}"
    * @type string
    * @description
    * The colors of the sparkles
@@ -81,14 +81,15 @@ interface SparklesTextProps {
   colors?: {
     first: string;
     second: string;
+    third?: string;
   };
 }
 
 export const SparklesText: React.FC<SparklesTextProps> = ({
   text,
-  colors = { first: "#9E7AFF", second: "#FE8BBB" },
+  colors = { first: "#16a34a", second: "#0ea5e9", third: "#f59e0b" },
   className,
-  sparklesCount = 10,
+  sparklesCount = 12,
   ...props
 }) => {
   const [sparkles, setSparkles] = useState<Sparkle[]>([]);
@@ -97,10 +98,21 @@ export const SparklesText: React.FC<SparklesTextProps> = ({
     const generateStar = (): Sparkle => {
       const starX = `${Math.random() * 100}%`;
       const starY = `${Math.random() * 100}%`;
-      const color = Math.random() > 0.5 ? colors.first : colors.second;
-      const delay = Math.random() * 2;
-      const scale = Math.random() * 1 + 0.3;
-      const lifespan = Math.random() * 10 + 5;
+
+      // Choose randomly between three colors for more variety
+      const colorRand = Math.random();
+      let color;
+      if (colorRand < 0.33) {
+        color = colors.first;
+      } else if (colorRand < 0.66) {
+        color = colors.second;
+      } else {
+        color = colors.third || colors.first;
+      }
+
+      const delay = Math.random() * 3;
+      const scale = Math.random() * 0.7 + 0.4; // More consistent but varied sizes
+      const lifespan = Math.random() * 12 + 8; // Longer lifespans for a dreamier effect
       const id = `${starX}-${starY}-${Date.now()}`;
       return { id, x: starX, y: starY, color, delay, scale, lifespan };
     };
@@ -116,26 +128,27 @@ export const SparklesText: React.FC<SparklesTextProps> = ({
           if (star.lifespan <= 0) {
             return generateStar();
           } else {
-            return { ...star, lifespan: star.lifespan - 0.05 };
+            return { ...star, lifespan: star.lifespan - 0.025 }; // Slower rate of change
           }
         })
       );
     };
 
     initializeStars();
-    const interval = setInterval(updateStars, 200);
+    const interval = setInterval(updateStars, 250); // Slower interval for dreamier effect
 
     return () => clearInterval(interval);
-  }, [colors.first, colors.second, sparklesCount]);
+  }, [colors.first, colors.second, colors.third, sparklesCount]);
 
   return (
     <div
-      className={cn("text-6xl font-bold", className)}
+      className={cn("text-6xl font-bold text-emerald-800 dark:text-emerald-300", className)}
       {...props}
       style={
         {
           "--sparkles-first-color": `${colors.first}`,
           "--sparkles-second-color": `${colors.second}`,
+          "--sparkles-third-color": `${colors.third || colors.first}`,
         } as CSSProperties
       }
     >
@@ -143,7 +156,7 @@ export const SparklesText: React.FC<SparklesTextProps> = ({
         {sparkles.map((sparkle) => (
           <Sparkle key={sparkle.id} {...sparkle} />
         ))}
-        <strong>{text}</strong>
+        <strong className="relative z-10 drop-shadow-sm">{text}</strong>
       </span>
     </div>
   );
