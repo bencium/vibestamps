@@ -1,17 +1,18 @@
-import { createGoogleGenerativeAI } from '@ai-sdk/google';
-import { streamText } from 'ai';
+import { createGoogleGenerativeAI } from "@ai-sdk/google";
+import { streamText } from "ai";
+import { NextResponse } from "next/server";
 
 // Initialize the Google Generative AI provider
 const google = createGoogleGenerativeAI({
-  apiKey: process.env.GOOGLE_API_KEY || ''
+  apiKey: process.env.GOOGLE_API_KEY || "",
 });
 
 export async function POST(request: Request) {
   try {
     const { srtContent } = await request.json();
-    
-    if (!srtContent || typeof srtContent !== 'string') {
-      return Response.json({ error: 'Invalid SRT content provided' }, { status: 400 });
+
+    if (!srtContent || typeof srtContent !== "string") {
+      return NextResponse.json({ error: "Invalid SRT content provided" }, { status: 400 });
     }
 
     // Create a system prompt that explains what we want from the model
@@ -36,15 +37,18 @@ export async function POST(request: Request) {
       Focus on topic changes, key arguments, or significant moments.
     `;
 
-    // Use streamText function from Vercel AI SDK with Google model
-    return streamText({
-      model: google('gemini-1.5-pro'),
+    // Use streamText function from the AI SDK with Google Gemini model
+    const { textStream } = streamText({
+      model: google("gemini-1.5-pro"),
       prompt: `${systemPrompt}\n\nHere is the transcript content from an SRT file. Please analyze it and generate meaningful timestamps with summaries:\n\n${srtContent}`,
       temperature: 0.7,
-      maxTokens: 1500
+      maxTokens: 1500,
     });
+
+    // Return a proper streaming response
+    return new Response(textStream);
   } catch (error) {
-    console.error('Error processing request:', error);
-    return Response.json({ error: 'Failed to process request' }, { status: 500 });
+    console.error("Error processing request:", error);
+    return NextResponse.json({ error: "Failed to process request" }, { status: 500 });
   }
 }
