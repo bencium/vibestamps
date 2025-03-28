@@ -5,6 +5,7 @@ import { Inter } from "next/font/google";
 import { SrtUploader } from "@/components/SrtUploader";
 import { TimestampResults } from "@/components/TimestampResults";
 import { SrtEntry } from "@/lib/srt-parser";
+import { Button } from "@/components/ui/button";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -68,10 +69,10 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-4 md:py-8">
       <div className="container max-w-5xl mx-auto px-4">
         {/* Header */}
-        <header className="flex flex-col items-center mb-12">
+        <header className="flex flex-col items-center mb-8 md:mb-12">
           <div className="flex items-center gap-3 mb-6">
             <h1 className={`text-3xl font-bold ${inter.className}`}>SRT Timestamp Generator</h1>
           </div>
@@ -82,52 +83,71 @@ export default function Home() {
         </header>
 
         {/* Main Content */}
-        <main className="flex flex-col items-center gap-8">
-          {/* File Upload */}
-          <SrtUploader onContentExtracted={handleContentExtracted} disabled={isProcessing} />
-
-          {/* Process Button */}
-          {srtContent && !isProcessing && !generatedContent && (
-            <div className="flex flex-col items-center gap-2">
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                {srtEntries.length} entries found in the SRT file
-              </p>
-              <button
-                onClick={processWithAI}
-                className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
-                disabled={isProcessing}
-              >
-                Generate Timestamps
-              </button>
-            </div>
+        <main className="flex flex-col items-center gap-6 md:gap-8 w-full">
+          {/* Step 1: File Upload (only show when not processing and no results) */}
+          {!isProcessing && !generatedContent && (
+            <>
+              <SrtUploader onContentExtracted={handleContentExtracted} disabled={isProcessing} />
+              
+              {/* Process Button (only show when file is uploaded) */}
+              {srtContent && (
+                <div className="flex flex-col items-center gap-2 animate-in fade-in duration-300">
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    {srtEntries.length} entries found in the SRT file
+                  </p>
+                  <Button
+                    onClick={processWithAI}
+                    className="w-full max-w-xs"
+                    disabled={isProcessing}
+                    size="lg"
+                  >
+                    Generate Timestamps
+                  </Button>
+                </div>
+              )}
+            </>
           )}
 
-          {/* Error Display */}
+          {/* Error Display (show at any step if there's an error) */}
           {error && (
-            <div className="w-full max-w-2xl p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-600 dark:text-red-400 text-sm">
-              <p>
-                <strong>Error:</strong> {error}
-              </p>
+            <div className="w-full max-w-2xl p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg flex items-start gap-3 animate-in fade-in duration-300">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-red-500 mt-0.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              <div className="text-red-600 dark:text-red-400 text-sm">
+                <p className="font-medium">Error</p>
+                <p>{error}</p>
+                {/* Add a retry button when there's an error */}
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="mt-2" 
+                  onClick={() => setError("")}
+                >
+                  Dismiss
+                </Button>
+              </div>
             </div>
           )}
 
-          {/* Results */}
+          {/* Step 2 & 3: Processing or Results */}
           {(isProcessing || generatedContent) && (
-            <TimestampResults isLoading={isProcessing} content={generatedContent} />
-          )}
-
-          {/* Reset Button */}
-          {generatedContent && !isProcessing && (
-            <button
-              onClick={() => {
-                setSrtContent("");
-                setSrtEntries([]);
-                setGeneratedContent("");
-              }}
-              className="px-4 py-2 bg-gray-200 dark:bg-gray-800 hover:bg-gray-300 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 font-medium rounded-lg transition-colors"
-            >
-              Process Another File
-            </button>
+            <div className="w-full flex flex-col items-center animate-in fade-in duration-300">
+              <TimestampResults isLoading={isProcessing} content={generatedContent} />
+              
+              {/* Only show reset button when results are generated and not loading */}
+              {generatedContent && !isProcessing && (
+                <Button
+                  onClick={() => {
+                    setSrtContent("");
+                    setSrtEntries([]);
+                    setGeneratedContent("");
+                  }}
+                  variant="outline"
+                  className="mt-6"
+                >
+                  Process Another File
+                </Button>
+              )}
+            </div>
           )}
         </main>
 

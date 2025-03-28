@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface TimestampResultsProps {
   isLoading: boolean;
@@ -68,26 +69,56 @@ export function TimestampResults({ isLoading, content }: TimestampResultsProps) 
       </CardHeader>
       <CardContent>
         {isLoading ? (
-          <div className="space-y-4">
-            <p className="text-sm text-gray-500 dark:text-gray-400">
+          <div className="space-y-4 p-4">
+            <p className="text-sm text-gray-500 dark:text-gray-400 text-center">
               Analyzing your SRT file and generating timestamps...
             </p>
             <Progress value={progress} className="h-2" />
+            <div className="flex justify-center">
+              <div className="animate-pulse text-gray-400 dark:text-gray-600 text-sm mt-2">
+                This may take a moment depending on file size
+              </div>
+            </div>
           </div>
         ) : content ? (
-          <div className="space-y-2 mt-2">
-            {sections.map((section, index) => (
-              <div key={index} className="border-b py-2 last:border-0">
-                <p className="text-base text-gray-800 dark:text-gray-200">
-                  {section.timestamp}
-                </p>
-              </div>
-            ))}
+          <div className="animate-in fade-in duration-500">
+            <div className="space-y-2 mt-2">
+              {sections.map((section, index) => (
+                <div key={index} className="border-b py-2 last:border-0 flex items-center justify-between group hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md px-3 transition-colors">
+                  <p className="text-base text-gray-800 dark:text-gray-200">
+                    {section.timestamp}
+                  </p>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          className="opacity-0 group-hover:opacity-100 transition-opacity"
+                          onClick={() => navigator.clipboard.writeText(section.timestamp)}
+                        >
+                          <span className="sr-only">Copy</span>
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-copy"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Copy timestamp</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </div>
+              ))}
+            </div>
           </div>
         ) : (
-          <p className="text-gray-500 dark:text-gray-400 text-center py-8">
-            Upload an SRT file to generate timestamps
-          </p>
+          <div className="flex flex-col items-center justify-center py-12 text-center">
+            <div className="rounded-full bg-gray-100 dark:bg-gray-800 p-4 mb-4">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-400"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+            </div>
+            <p className="text-gray-500 dark:text-gray-400">
+              Upload an SRT file to generate timestamps
+            </p>
+          </div>
         )}
       </CardContent>
     </Card>
