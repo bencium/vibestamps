@@ -223,9 +223,9 @@ export default function Home() {
         {/* Footer */}
         <footer className="mt-auto pt-8 pb-8 text-gray-500 dark:text-gray-400 text-sm flex flex-col">
           <div className="flex items-center justify-between w-full">
-            {/* Gemini 2.5 Pro attribution */}
+            {/* Gemini attribution */}
             <div className="opacity-70 hover:opacity-100 transition-opacity">
-              <SparklesText text="Gemini 2.5 Pro" className="text-base" sparklesCount={5} />
+              <SparklesText text="Google Gemini" className="text-base" sparklesCount={5} />
             </div>
             {/* Theme Toggle Button */}
             <div className="absolute bottom-0 right-4 md:bottom-8 md:right-4">
