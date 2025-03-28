@@ -1,8 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { srtFileSchema } from "@/lib/schemas";
 import { extractTextFromSrt, parseSrtContent, SrtEntry } from "@/lib/srt-parser";
 import { useRef, useState } from "react";
+
+// Max file size in bytes (35 KB) - maintaining consistency with lib/schemas.ts
+const MAX_FILE_SIZE = 35 * 1024;
 
 interface SrtUploaderProps {
   onContentExtracted: (content: string, entries: SrtEntry[]) => void;
@@ -33,13 +37,37 @@ export function SrtUploader({
     setFileName(file.name);
     setError("");
 
-    if (!file.name.endsWith(".srt")) {
-      setError("Please upload a valid .srt file");
+    // Check file size before any other validation
+    if (file.size > MAX_FILE_SIZE) {
+      setError(`File is too large. Maximum size is ${MAX_FILE_SIZE / 1024}KB`);
       return;
     }
 
     try {
+      // Validate file name with Zod
+      const validationResult = srtFileSchema.safeParse({
+        fileName: file.name,
+        fileContent: "placeholder", // Will be replaced with actual content
+      });
+
+      if (!validationResult.success) {
+        setError(validationResult.error.errors[0].message);
+        return;
+      }
+
       const content = await file.text();
+
+      // Now validate actual content
+      const contentValidation = srtFileSchema.safeParse({
+        fileName: file.name,
+        fileContent: content,
+      });
+
+      if (!contentValidation.success) {
+        setError(contentValidation.error.errors[0].message);
+        return;
+      }
+
       const entries = parseSrtContent(content);
 
       if (entries.length === 0) {

@@ -6,6 +6,7 @@ import { SrtUploader } from "@/components/SrtUploader";
 import { TimestampResults } from "@/components/TimestampResults";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
+import { srtContentSchema, srtEntriesSchema } from "@/lib/schemas";
 import { SrtEntry } from "@/lib/srt-parser";
 import { Doto } from "next/font/google";
 import { useState } from "react";
@@ -21,10 +22,30 @@ export default function Home() {
 
   // Handle extracted SRT content
   const handleContentExtracted = (content: string, entries: SrtEntry[]) => {
-    setSrtContent(content);
-    setSrtEntries(entries);
-    setGeneratedContent(""); // Reset previous results
-    setError("");
+    // Validate content and entries with Zod
+    try {
+      // Validate SRT content
+      const contentValidation = srtContentSchema.safeParse({ srtContent: content });
+      if (!contentValidation.success) {
+        setError(contentValidation.error.errors[0].message);
+        return;
+      }
+
+      // Validate SRT entries
+      const entriesValidation = srtEntriesSchema.safeParse(entries);
+      if (!entriesValidation.success) {
+        setError("Invalid SRT entries format");
+        return;
+      }
+
+      setSrtContent(content);
+      setSrtEntries(entries);
+      setGeneratedContent(""); // Reset previous results
+      setError("");
+    } catch (err) {
+      console.error("Validation error:", err);
+      setError("Failed to validate SRT data");
+    }
   };
 
   // Process the SRT content with AI
@@ -36,6 +57,12 @@ export default function Home() {
     setGeneratedContent("");
 
     try {
+      // Validate SRT content before sending to API
+      const contentValidation = srtContentSchema.safeParse({ srtContent });
+      if (!contentValidation.success) {
+        throw new Error(contentValidation.error.errors[0].message);
+      }
+
       const response = await fetch("/api/generate", {
         method: "POST",
         headers: {

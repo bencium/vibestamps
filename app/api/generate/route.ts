@@ -1,6 +1,10 @@
+import { generateApiRequestSchema } from "@/lib/schemas";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { streamText, wrapLanguageModel, type LanguageModelV1Middleware } from "ai";
 import { NextResponse } from "next/server";
+
+// Max request size in bytes (35 KB) - maintaining consistency
+const MAX_REQUEST_SIZE = 35 * 1024;
 
 // Initialize the Google Generative AI provider
 const googleBase = createGoogleGenerativeAI({
@@ -50,11 +54,28 @@ const modelWithFallback = wrapLanguageModel({
 
 export async function POST(request: Request) {
   try {
-    const { srtContent } = await request.json();
-
-    if (!srtContent || typeof srtContent !== "string") {
-      return NextResponse.json({ error: "Invalid SRT content provided" }, { status: 400 });
+    // Check request size before parsing
+    const contentLength = request.headers.get("content-length");
+    if (contentLength && parseInt(contentLength) > MAX_REQUEST_SIZE) {
+      return NextResponse.json(
+        { error: `Request too large. Maximum size is ${MAX_REQUEST_SIZE / 1024}KB` },
+        { status: 413 } // 413 Payload Too Large
+      );
     }
+
+    const body = await request.json();
+
+    // Validate request body with Zod
+    const validationResult = generateApiRequestSchema.safeParse(body);
+
+    if (!validationResult.success) {
+      return NextResponse.json(
+        { error: validationResult.error.errors[0].message },
+        { status: 400 }
+      );
+    }
+
+    const { srtContent } = validationResult.data;
 
     // Create a system prompt that explains what we want from the model
     const systemPrompt = `
