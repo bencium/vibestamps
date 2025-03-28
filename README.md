@@ -1,5 +1,7 @@
 # SRT Timestamp Generator
 
+![SRT Timestamp Generator](https://github.com/user-attachments/assets/33cea444-249b-4793-bf42-6c50619528c9)
+
 ## Overview
 
 SRT Timestamp Generator is a modern web application that simplifies the process of extracting valuable information from subtitle files. The app allows users to upload SubRip Text (`.srt`) files and leverages Google's Gemini AI model to generate meaningful timestamps, chapters, or summaries based on the content.
