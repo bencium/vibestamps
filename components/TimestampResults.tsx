@@ -88,23 +88,40 @@ export function TimestampResults({ isLoading, content }: TimestampResultsProps) 
   };
 
   return (
-    <Card className="w-full max-w-3xl">
+    <Card className="w-full max-w-3xl backdrop-blur-sm">
       <CardHeader className="flex flex-row items-center justify-between pb-2">
-        <CardTitle className="text-xl">Generated Timestamps</CardTitle>
+        <CardTitle className="text-xl text-emerald-800 dark:text-emerald-300">
+          Generated Timestamps
+        </CardTitle>
         {content && !isLoading && (
           <Button onClick={copyToClipboard} variant="outline" size="sm">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="mr-1"
+            >
+              <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
+              <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
+            </svg>
             Copy All
           </Button>
         )}
       </CardHeader>
       <CardContent>
-        <div className={isLoading ? "space-y-4 p-4" : "hidden"}>
-          <p className="text-sm text-gray-500 dark:text-gray-400 text-center">
+        <div className={isLoading ? "space-y-4 p-6" : "hidden"}>
+          <p className="text-sm text-sky-700/70 dark:text-sky-300/70 text-center">
             Analyzing your SRT file and generating timestamps...
           </p>
           <Progress value={progress} className="h-2" />
           <div className="flex justify-center">
-            <div className="animate-pulse text-gray-400 dark:text-gray-600 text-sm mt-2">
+            <div className="animate-pulse text-sky-600/50 dark:text-sky-400/50 text-sm mt-2">
               This may take a moment depending on file size
             </div>
           </div>
@@ -117,7 +134,7 @@ export function TimestampResults({ isLoading, content }: TimestampResultsProps) 
               {parsedSections.map((section, index) => (
                 <div
                   key={index}
-                  className={`border-b py-2 last:border-0 flex items-center justify-between group hover:bg-gray-50 dark:hover:bg-gray-800 rounded-md px-3 transition-colors ${
+                  className={`border-b border-slate-200/60 dark:border-slate-700/50 py-3 last:border-0 flex items-center justify-between group hover:bg-emerald-50/50 dark:hover:bg-emerald-900/20 rounded-xl px-4 transition-colors ${
                     section.isNew
                       ? "animate-in slide-in-from-right-5 fade-in duration-300 scale-in-100"
                       : ""
@@ -126,22 +143,22 @@ export function TimestampResults({ isLoading, content }: TimestampResultsProps) 
                     section.isNew
                       ? {
                           animationDelay: `${index * 100}ms`,
-                          backgroundColor: section.isNew
-                            ? "rgba(147, 197, 253, 0.1)"
-                            : "transparent",
+                          backgroundColor: section.isNew ? "rgba(16,185,129,0.07)" : "transparent",
                           transition: "background-color 1s ease-out",
                         }
                       : undefined
                   }
                 >
-                  <p className="text-base text-gray-800 dark:text-gray-200">{section.timestamp}</p>
+                  <p className="text-base text-slate-700 dark:text-slate-200">
+                    {section.timestamp}
+                  </p>
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <Button
                           variant="ghost"
                           size="sm"
-                          className="opacity-0 group-hover:opacity-100 transition-opacity"
+                          className="opacity-0 group-hover:opacity-100 transition-opacity rounded-full"
                           onClick={() => navigator.clipboard.writeText(section.timestamp)}
                         >
                           <span className="sr-only">Copy</span>
@@ -155,7 +172,7 @@ export function TimestampResults({ isLoading, content }: TimestampResultsProps) 
                             strokeWidth="2"
                             strokeLinecap="round"
                             strokeLinejoin="round"
-                            className="lucide lucide-copy"
+                            className="text-emerald-600 dark:text-emerald-400"
                           >
                             <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
                             <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
@@ -175,7 +192,7 @@ export function TimestampResults({ isLoading, content }: TimestampResultsProps) 
           !isLoading &&
           !content && (
             <div className="flex flex-col items-center justify-center py-12 text-center">
-              <div className="rounded-full bg-gray-100 dark:bg-gray-800 p-4 mb-4">
+              <div className="rounded-full bg-emerald-50/80 dark:bg-emerald-900/20 p-6 mb-6 border border-emerald-100/50 dark:border-emerald-800/40">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="24"
@@ -186,14 +203,19 @@ export function TimestampResults({ isLoading, content }: TimestampResultsProps) 
                   strokeWidth="2"
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  className="text-gray-400"
+                  className="text-emerald-500 dark:text-emerald-400"
                 >
-                  <circle cx="12" cy="12" r="10" />
-                  <path d="M12 16v-4" />
-                  <path d="M12 8h.01" />
+                  <path d="M12 2v4" />
+                  <path d="M12 18v4" />
+                  <path d="m4.93 4.93 2.83 2.83" />
+                  <path d="m16.24 16.24 2.83 2.83" />
+                  <path d="M2 12h4" />
+                  <path d="M18 12h4" />
+                  <path d="m4.93 19.07 2.83-2.83" />
+                  <path d="m16.24 7.76 2.83-2.83" />
                 </svg>
               </div>
-              <p className="text-gray-500 dark:text-gray-400">
+              <p className="text-sky-700 dark:text-sky-300">
                 Upload an SRT file to generate timestamps
               </p>
             </div>
