@@ -118,7 +118,7 @@ export function SrtUploader({ onContentExtracted, onProcessFile, disabled, entri
         )}
         
         {fileName && (
-          <div className="mt-2 text-sm flex items-center gap-2 bg-gray-50 dark:bg-gray-800 p-2 rounded-md w-full">
+          <div className="mt-2 text-sm flex items-center justify-center gap-2 bg-gray-50 dark:bg-gray-800 p-2 rounded-md w-full">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-green-500"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
             <span className="font-medium">Selected file:</span> {fileName}
           </div>
