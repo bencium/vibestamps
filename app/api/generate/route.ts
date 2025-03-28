@@ -23,18 +23,18 @@ export async function POST(request: Request) {
       
       1. A timestamp (in format HH:MM:SS)
       2. A concise title/description (5-7 words)
-      3. A brief summary (1-2 sentences)
       
-      Format your response like this:
+      Format your response exactly like this:
       
-      ## 00:01:15 - Introduction to the Topic
-      Brief summary of what happens at this timestamp.
+      00:00:00 - Introduction to the Video
+      00:01:15 - First Important Topic
+      00:03:42 - Next Key Point Discussed
       
-      ## 00:03:42 - Key Point Discussed
-      Brief summary of the key point being made.
+      IMPORTANT: The first timestamp MUST start with 00:00:00 as this is required for YouTube chapters to work properly.
       
       Identify 5-10 meaningful timestamps throughout the content.
       Focus on topic changes, key arguments, or significant moments.
+      Do not add any markdown formatting, headings, or additional text - just the timestamps in the format shown above.
     `;
 
     // Use streamText function from the AI SDK with Google Gemini model

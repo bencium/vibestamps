@@ -1,13 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import { Inter } from "next/font/google";
 import { SrtUploader } from "@/components/SrtUploader";
 import { TimestampResults } from "@/components/TimestampResults";
 import { SrtEntry } from "@/lib/srt-parser";
 
-const inter = Inter({ subsets: ['latin'] });
+const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
   const [srtContent, setSrtContent] = useState<string>("");
@@ -74,29 +73,18 @@ export default function Home() {
         {/* Header */}
         <header className="flex flex-col items-center mb-12">
           <div className="flex items-center gap-3 mb-6">
-            <Image 
-              src="/favicon.ico" 
-              alt="SRT Timestamp Generator Logo" 
-              width={36} 
-              height={36} 
-              className="rounded-lg"
-            />
-            <h1 className={`text-3xl font-bold ${inter.className}`}>
-              SRT Timestamp Generator
-            </h1>
+            <h1 className={`text-3xl font-bold ${inter.className}`}>SRT Timestamp Generator</h1>
           </div>
           <p className="text-center text-gray-600 dark:text-gray-400 max-w-2xl">
-            Upload a SubRip Text (.srt) file to generate meaningful timestamps and summaries using AI.
+            Upload a SubRip Text (.srt) file to generate meaningful timestamps and summaries using
+            AI.
           </p>
         </header>
 
         {/* Main Content */}
         <main className="flex flex-col items-center gap-8">
           {/* File Upload */}
-          <SrtUploader 
-            onContentExtracted={handleContentExtracted} 
-            disabled={isProcessing}
-          />
+          <SrtUploader onContentExtracted={handleContentExtracted} disabled={isProcessing} />
 
           {/* Process Button */}
           {srtContent && !isProcessing && !generatedContent && (
@@ -117,16 +105,15 @@ export default function Home() {
           {/* Error Display */}
           {error && (
             <div className="w-full max-w-2xl p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-600 dark:text-red-400 text-sm">
-              <p><strong>Error:</strong> {error}</p>
+              <p>
+                <strong>Error:</strong> {error}
+              </p>
             </div>
           )}
 
           {/* Results */}
           {(isProcessing || generatedContent) && (
-            <TimestampResults 
-              isLoading={isProcessing} 
-              content={generatedContent} 
-            />
+            <TimestampResults isLoading={isProcessing} content={generatedContent} />
           )}
 
           {/* Reset Button */}

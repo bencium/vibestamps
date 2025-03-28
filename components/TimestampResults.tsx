@@ -33,30 +33,27 @@ export function TimestampResults({ isLoading, content }: TimestampResultsProps) 
     }
   }, [isLoading]);
 
-  // Parse the markdown content into sections
-  const parseContent = (markdown: string) => {
-    if (!markdown) return [];
+  // Parse the timestamp content into lines
+  const parseContent = (content: string) => {
+    if (!content) return [];
     
-    // Split by markdown headings (## timestamp - title)
-    const sections = markdown.split(/^## /gm).filter(Boolean);
+    // Split by lines and filter empty lines
+    const timestampLines = content
+      .split('\n')
+      .map(line => line.trim())
+      .filter(line => line && /^\d{2}:\d{2}:\d{2}\s*-\s*.+/.test(line));
     
-    return sections.map(section => {
-      const lines = section.trim().split('\n');
-      const titleLine = lines[0];
-      const content = lines.slice(1).join('\n').trim();
-      
-      return {
-        title: titleLine,
-        content
-      };
-    });
+    return timestampLines.map(line => ({
+      timestamp: line
+    }));
   };
 
   const sections = parseContent(content);
 
-  // Function to copy all content to clipboard
+  // Function to copy all timestamps to clipboard
   const copyToClipboard = () => {
-    navigator.clipboard.writeText(content);
+    const timestampsText = sections.map(section => section.timestamp).join('\n');
+    navigator.clipboard.writeText(timestampsText);
   };
 
   return (
@@ -78,12 +75,11 @@ export function TimestampResults({ isLoading, content }: TimestampResultsProps) 
             <Progress value={progress} className="h-2" />
           </div>
         ) : content ? (
-          <div className="space-y-6 mt-2">
+          <div className="space-y-2 mt-2">
             {sections.map((section, index) => (
-              <div key={index} className="border-b pb-4 last:border-0">
-                <h3 className="font-semibold text-base mb-2">{section.title}</h3>
-                <p className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-line">
-                  {section.content}
+              <div key={index} className="border-b py-2 last:border-0">
+                <p className="text-base text-gray-800 dark:text-gray-200">
+                  {section.timestamp}
                 </p>
               </div>
             ))}
