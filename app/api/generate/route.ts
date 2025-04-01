@@ -75,20 +75,54 @@ export async function POST(request: Request) {
 
     const { srtContent } = validationResult.data;
 
-    // Extract the last timestamp from the SRT content
-    const lastTimestampMatch = srtContent.match(/(\d{2}:\d{2}:\d{2},\d{3}|\d{2}:\d{2},\d{3})/g);
-    const lastTimestamp = lastTimestampMatch
-      ? lastTimestampMatch[lastTimestampMatch.length - 1]
-      : null;
-    const videoEndTime = lastTimestamp
-      ? `The video ends at approximately ${lastTimestamp.replace(",", ".")}`
-      : "";
+    // Extract the last timestamp from the SRT content using a more robust pattern
+    // This looks for SRT timestamp patterns like "00:14:03,251 --> 00:14:03,751"
+    const timestampRegex = /(\d{2}:\d{2}:\d{2},\d{3}) --> (\d{2}:\d{2}:\d{2},\d{3})/g;
+    let maxTimestamp = "00:00:00";
+    let match;
+
+    // Find all timestamp pairs and get the latest end time
+    while ((match = timestampRegex.exec(srtContent)) !== null) {
+      const endTime = match[2]; // Second capture group is the end time
+      // Convert to seconds for comparison
+      const endTimeParts = endTime.split(/[,:]/);
+      const endTimeSeconds =
+        parseInt(endTimeParts[0]) * 3600 +
+        parseInt(endTimeParts[1]) * 60 +
+        parseInt(endTimeParts[2]) +
+        parseInt(endTimeParts[3]) / 1000;
+
+      const maxTimeParts = maxTimestamp.split(/[,:]/);
+      const maxTimeSeconds =
+        parseInt(maxTimeParts[0]) * 3600 +
+        parseInt(maxTimeParts[1]) * 60 +
+        parseInt(maxTimeParts[2] || "0") +
+        parseInt(maxTimeParts[3] || "0") / 1000;
+
+      if (endTimeSeconds > maxTimeSeconds) {
+        // Format nicely for display: HH:MM:SS
+        const hours = endTimeParts[0];
+        const minutes = endTimeParts[1];
+        const seconds = endTimeParts[2];
+
+        // Keep only hours if non-zero, otherwise just show MM:SS
+        maxTimestamp = hours !== "00" ? `${hours}:${minutes}:${seconds}` : `${minutes}:${seconds}`;
+      }
+    }
+
+    // Create more explicit constraints about the video end time
+    const videoEndTimeInfo =
+      maxTimestamp !== "00:00:00"
+        ? `The video's maximum duration is ${maxTimestamp}. ANY TIMESTAMP BEYOND ${maxTimestamp} IS INVALID AND MUST NOT BE INCLUDED IN YOUR RESPONSE. Only generate timestamps within the range of 00:00 to ${maxTimestamp}.`
+        : "";
 
     // Create a system prompt that explains what we want from the model
     const systemPrompt = `
       # Instructions for Generating Concise Video Timestamps from a Transcript
 
 These instructions aim to generate precise, high-level timestamps for a video, focusing on key topics and demonstrations rather than every single sentence.
+
+**IMPORTANT VIDEO LENGTH CONSTRAINT: ${videoEndTimeInfo}**
 
 **Input:** A video transcript in SRT or VTT format.
 
@@ -102,8 +136,7 @@ MM:SS [Specific final topic]
 
 **Process:**
 
-1. **Video Length:** Determine the total video duration from the last timestamp in the transcript.
-   ${videoEndTime}. Do not generate timestamps beyond this point.
+1. **Video Length:** The video length is ${maxTimestamp}. Do not generate any timestamps beyond ${maxTimestamp} under any circumstances.
 
 2. **Target Timestamp Quantity:** (Crucial Adjustment) Aim for a more manageable number of timestamps, aiming for a range of **5-12 timestamps** for the entire video, regardless of length. This is crucial for conciseness and to prevent an overly long list. Don't be afraid to be more selective.
 
