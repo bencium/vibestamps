@@ -75,6 +75,15 @@ export async function POST(request: Request) {
 
     const { srtContent } = validationResult.data;
 
+    // Extract the last timestamp from the SRT content
+    const lastTimestampMatch = srtContent.match(/(\d{2}:\d{2}:\d{2},\d{3}|\d{2}:\d{2},\d{3})/g);
+    const lastTimestamp = lastTimestampMatch
+      ? lastTimestampMatch[lastTimestampMatch.length - 1]
+      : null;
+    const videoEndTime = lastTimestamp
+      ? `The video ends at approximately ${lastTimestamp.replace(",", ".")}`
+      : "";
+
     // Create a system prompt that explains what we want from the model
     const systemPrompt = `
       # Instructions for Generating Concise Video Timestamps from a Transcript
@@ -94,6 +103,7 @@ MM:SS [Specific final topic]
 **Process:**
 
 1. **Video Length:** Determine the total video duration from the last timestamp in the transcript.
+   ${videoEndTime}. Do not generate timestamps beyond this point.
 
 2. **Target Timestamp Quantity:** (Crucial Adjustment) Aim for a more manageable number of timestamps, aiming for a range of **5-12 timestamps** for the entire video, regardless of length. This is crucial for conciseness and to prevent an overly long list. Don't be afraid to be more selective.
 
