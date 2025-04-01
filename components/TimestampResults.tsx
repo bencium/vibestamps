@@ -43,10 +43,26 @@ export function TimestampResults({ isLoading, content }: TimestampResultsProps) 
       if (!text) return [];
 
       // Split by lines and filter empty lines
-      return text
+      const lines = text
         .split("\n")
         .map((line) => line.trim())
-        .filter((line) => line && /^\d{2}:\d{2}:\d{2}\s*-\s*.+/.test(line))
+        .filter(Boolean);
+
+      // Find header line with "Key Moments" (if exists)
+      const contentStartIndex = lines.findIndex(
+        (line) => line === "🕒 Key Moments:" || line === "🕒 Key moments:"
+      );
+
+      // Get only content after the header, or use all lines if header not found
+      const contentLines = contentStartIndex >= 0 ? lines.slice(contentStartIndex + 1) : lines;
+
+      // Match lines with timestamp format MM:SS or HH:MM:SS followed by description
+      // Now handles both "00:00 Description" and "00:00:00 Description" formats
+      return contentLines
+        .filter((line) => {
+          // Match either MM:SS or HH:MM:SS format at the start of the line
+          return /^(\d{1,2}:\d{2}(:\d{2})?\s+)/.test(line);
+        })
         .map((line) => ({ timestamp: line }));
     };
 
@@ -130,62 +146,84 @@ export function TimestampResults({ isLoading, content }: TimestampResultsProps) 
         {/* Now we show results even while loading if we have some content */}
         {parsedSections.length > 0 ? (
           <div className="animate-in fade-in duration-500">
+            {content.includes("🕒 Key Moments:") || content.includes("🕒 Key moments:") ? (
+              <div className="mb-4 text-center">
+                <p className="text-sky-700 dark:text-sky-300 text-lg font-medium">🕒 Key Moments</p>
+              </div>
+            ) : null}
+
             <div className="space-y-2 mt-2">
-              {parsedSections.map((section, index) => (
-                <div
-                  key={index}
-                  className={`border-b border-slate-200/60 dark:border-slate-700/50 py-3 last:border-0 flex items-center justify-between group hover:bg-emerald-50/50 dark:hover:bg-emerald-900/20 rounded-xl px-4 transition-colors ${
-                    section.isNew
-                      ? "animate-in slide-in-from-right-5 fade-in duration-300 scale-in-100"
-                      : ""
-                  }`}
-                  style={
-                    section.isNew
-                      ? {
-                          animationDelay: `${index * 100}ms`,
-                          backgroundColor: section.isNew ? "rgba(16,185,129,0.07)" : "transparent",
-                          transition: "background-color 1s ease-out",
-                        }
-                      : undefined
-                  }
-                >
-                  <p className="text-base text-slate-700 dark:text-slate-200">
-                    {section.timestamp}
-                  </p>
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="opacity-0 group-hover:opacity-100 transition-opacity rounded-full"
-                          onClick={() => navigator.clipboard.writeText(section.timestamp)}
-                        >
-                          <span className="sr-only">Copy</span>
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="16"
-                            height="16"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            className="text-emerald-600 dark:text-emerald-400"
+              {parsedSections.map((section, index) => {
+                // Extract time part and description part from the timestamp
+                // Handles both "00:00 Description" and "00:00:00 Description" formats
+                const [timePart, ...descriptionParts] = section.timestamp.split(/\s+/);
+                const description = descriptionParts.join(" ");
+
+                return (
+                  <div
+                    key={index}
+                    className={`border-b border-slate-200/60 dark:border-slate-700/50 py-3 last:border-0 flex items-start justify-between group hover:bg-emerald-50/50 dark:hover:bg-emerald-900/20 rounded-xl px-4 transition-colors ${
+                      section.isNew
+                        ? "animate-in slide-in-from-right-5 fade-in duration-300 scale-in-100"
+                        : ""
+                    }`}
+                    style={
+                      section.isNew
+                        ? {
+                            animationDelay: `${index * 100}ms`,
+                            backgroundColor: section.isNew
+                              ? "rgba(16,185,129,0.07)"
+                              : "transparent",
+                            transition: "background-color 1s ease-out",
+                          }
+                        : undefined
+                    }
+                  >
+                    <div className="flex-1">
+                      <div className="flex items-baseline">
+                        <span className="text-base font-medium text-emerald-600 dark:text-emerald-400 mr-3 whitespace-nowrap">
+                          {timePart}
+                        </span>
+                        <span className="text-base text-slate-700 dark:text-slate-200">
+                          {description}
+                        </span>
+                      </div>
+                    </div>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="opacity-0 group-hover:opacity-100 transition-opacity rounded-full ml-2"
+                            onClick={() => navigator.clipboard.writeText(section.timestamp)}
                           >
-                            <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
-                            <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
-                          </svg>
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>Copy timestamp</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </div>
-              ))}
+                            <span className="sr-only">Copy</span>
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="16"
+                              height="16"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              className="text-emerald-600 dark:text-emerald-400"
+                            >
+                              <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
+                              <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
+                            </svg>
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Copy timestamp</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
+                );
+              })}
             </div>
           </div>
         ) : (
