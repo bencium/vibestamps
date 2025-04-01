@@ -157,7 +157,7 @@ MM:SS [Action-oriented description]
     const { textStream } = streamText({
       model: modelWithFallback,
       prompt: `${systemPrompt}\n\nHere is the transcript content from an SRT file. Please analyze it and generate meaningful timestamps with summaries:\n\n${srtContent}`,
-      temperature: 0.7,
+      temperature: 0.1,
       maxTokens: 1500,
     });
 
