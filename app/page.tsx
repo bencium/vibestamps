@@ -63,7 +63,7 @@ export default function Home() {
         throw new Error(contentValidation.error.errors[0].message);
       }
 
-      const response = await fetch("/.netlify/functions/generate", {
+      const response = await fetch("/api/generate", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -76,9 +76,20 @@ export default function Home() {
         throw new Error(errorData.error || "Failed to generate timestamps");
       }
 
-      // Handle non-streaming response from Netlify Function
-      const result = await response.text();
-      setGeneratedContent(result);
+      // Handle streaming response
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
+      let result = "";
+
+      if (reader) {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          const chunk = decoder.decode(value, { stream: true });
+          result += chunk;
+          setGeneratedContent(result);
+        }
+      }
     } catch (err) {
       console.error("Error generating timestamps:", err);
       setError(err instanceof Error ? err.message : "Failed to process your file");

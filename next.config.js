@@ -1,16 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'export',
-  // Disable image optimization for static export
+  // Enable image optimization (Vercel supports this)
   images: {
-    unoptimized: true,
+    domains: [],
   },
-  // Ensure trailing slashes for better compatibility
-  trailingSlash: true,
-  // Ensure proper asset prefix for static hosting
-  assetPrefix: '',
-  // Use relative paths for assets
-  basePath: '',
+  // Modern configuration for Vercel
+  swcMinify: true,
 };
 
 module.exports = nextConfig;
