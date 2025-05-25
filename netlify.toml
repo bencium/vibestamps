@@ -1,6 +1,6 @@
 [build]
   command = "next build"
-  publish = ".next/static"
+  publish = ".next"
 
 [build.environment]
   NODE_VERSION = "20.x"  # For React 19 compatibility
