@@ -63,7 +63,7 @@ export default function Home() {
         throw new Error(contentValidation.error.errors[0].message);
       }
 
-      const response = await fetch("/api/generate", {
+      const response = await fetch("/.netlify/functions/generate", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -76,20 +76,9 @@ export default function Home() {
         throw new Error(errorData.error || "Failed to generate timestamps");
       }
 
-      // Handle streaming response
-      const reader = response.body?.getReader();
-      const decoder = new TextDecoder();
-      let result = "";
-
-      if (reader) {
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          const chunk = decoder.decode(value, { stream: true });
-          result += chunk;
-          setGeneratedContent(result);
-        }
-      }
+      // Handle non-streaming response from Netlify Function
+      const result = await response.text();
+      setGeneratedContent(result);
     } catch (err) {
       console.error("Error generating timestamps:", err);
       setError(err instanceof Error ? err.message : "Failed to process your file");
@@ -266,14 +255,14 @@ export default function Home() {
         </main>
 
         {/* Footer */}
-        <footer className="mt-auto pt-8 pb-8 text-gray-500 dark:text-gray-400 text-sm flex flex-col">
+        <footer className="mt-auto pt-8 pb-8 text-gray-500 dark:text-gray-400 text-sm flex flex-col relative">
           <div className="flex items-center justify-between w-full">
             {/* Gemini attribution */}
             <div className="opacity-70 hover:opacity-100 transition-opacity">
               <SparklesText text="Google Gemini" className="text-base" sparklesCount={5} />
             </div>
             {/* Theme Toggle Button */}
-            <div className="absolute bottom-0 right-4 md:bottom-8 md:right-4">
+            <div className="flex-shrink-0">
               <ThemeToggle />
             </div>
           </div>
