@@ -27,8 +27,12 @@ export function SrtUploader({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    console.log("File input changed, files:", event.target.files);
     const file = event.target.files?.[0];
-    if (file) processFile(file);
+    if (file) {
+      console.log("Processing file:", file.name, file.size);
+      processFile(file);
+    }
   };
 
   const processFile = async (file: File) => {
@@ -106,6 +110,9 @@ export function SrtUploader({
   };
 
   const triggerFileInput = () => {
+    console.log("Upload button clicked, disabled:", disabled);
+    console.log("File input ref:", fileInputRef.current);
+    setError(""); // Clear any existing errors
     fileInputRef.current?.click();
   };
 
