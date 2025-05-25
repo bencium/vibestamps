@@ -7,10 +7,6 @@ const nextConfig = {
   },
   // Ensure trailing slashes for better compatibility
   trailingSlash: true,
-  // Disable server components for static export
-  experimental: {
-    appDir: true,
-  },
 };
 
 module.exports = nextConfig;
