@@ -1,8 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { MAX_FILE_SIZE } from "@/lib/constants";
-import { srtFileSchema } from "@/lib/schemas";
+import { srtFileSchema, srtContentSchema } from "@/lib/schemas";
 import { extractTextFromSrt, parseSrtContent, SrtEntry } from "@/lib/srt-parser";
 import { useRef, useState } from "react";
 
@@ -36,59 +35,76 @@ export function SrtUploader({
   };
 
   const processFile = async (file: File) => {
+    console.log("Processing file:", file.name, file.size, file.type);
     setFileName(file.name);
     setError("");
 
     // Check file size before any other validation
     if (file.size > MAX_FILE_SIZE) {
-      setError(`File is too large. Maximum size is ${MAX_FILE_SIZE / 1024}KB`);
+      const errorMsg = `File is too large. Maximum size is ${MAX_FILE_SIZE / 1024}KB`;
+      console.error(errorMsg);
+      setError(errorMsg);
       return;
     }
 
     try {
       // Validate file name with Zod
+      console.log("Validating file name:", file.name);
       const validationResult = srtFileSchema.safeParse({
         fileName: file.name,
         fileContent: "placeholder", // Will be replaced with actual content
       });
 
       if (!validationResult.success) {
-        setError(validationResult.error.errors[0].message);
+        const errorMsg = validationResult.error.errors[0].message;
+        console.error("File name validation failed:", errorMsg);
+        setError(errorMsg);
         return;
       }
 
-      const content = await file.text();
+      // Read file content
+      console.log("Reading file content...");
+      const fileContent = await file.text();
+      console.log("File content length:", fileContent.length);
 
-      // Now validate actual content
-      const contentValidation = srtFileSchema.safeParse({
-        fileName: file.name,
-        fileContent: content,
+      // Validate content with Zod
+      console.log("Validating file content...");
+      const contentValidation = srtContentSchema.safeParse({
+        srtContent: fileContent,
       });
 
       if (!contentValidation.success) {
-        setError(contentValidation.error.errors[0].message);
+        const errorMsg = contentValidation.error.errors[0].message;
+        console.error("Content validation failed:", errorMsg);
+        setError(errorMsg);
         return;
       }
 
-      const entries = parseSrtContent(content);
+      // Parse SRT content
+      console.log("Parsing SRT content...");
+      const entries = parseSrtContent(fileContent);
+      console.log("Parsed entries count:", entries.length);
 
-      if (entries.length === 0) {
-        setError("Could not parse any valid entries from the SRT file");
-        return;
-      }
+      // Extract text content - use the entries array, not the raw content
+      const textContent = extractTextFromSrt(entries);
+      console.log("Extracted text length:", textContent.length);
 
-      const extractedText = extractTextFromSrt(entries);
-      onContentExtracted(extractedText, entries);
+      // Pass content to parent component
+      console.log("Passing content to parent component...");
+      onContentExtracted(fileContent, entries);
 
-      // Auto-process after a short delay to allow UI to update
+      // Debounce to avoid rapid clicks
+      console.log("Setting timeout for processing...");
       setTimeout(() => {
+        console.log("Timeout triggered, disabled:", disabled);
         if (!disabled) {
+          console.log("Calling onProcessFile...");
           onProcessFile();
         }
       }, 500);
     } catch (err) {
-      console.error("Error reading file:", err);
-      setError("Failed to read the file. Please try again.");
+      console.error("Error processing file:", err);
+      setError(`Failed to process the file: ${err instanceof Error ? err.message : "Unknown error"}`); 
     }
   };
 
@@ -111,9 +127,26 @@ export function SrtUploader({
 
   const triggerFileInput = () => {
     console.log("Upload button clicked, disabled:", disabled);
-    console.log("File input ref:", fileInputRef.current);
-    setError(""); // Clear any existing errors
-    fileInputRef.current?.click();
+    
+    // Clear any existing errors
+    setError("");
+    
+    // Make sure we have a valid file input reference
+    if (!fileInputRef.current) {
+      console.error("File input reference is null!");
+      setError("Browser error: Could not access file input. Please try refreshing the page.");
+      return;
+    }
+    
+    console.log("File input ref exists, clicking...");
+    
+    // Use a more direct approach to trigger the file input
+    try {
+      fileInputRef.current.click();
+    } catch (err) {
+      console.error("Error clicking file input:", err);
+      setError("Browser error: Could not open file picker. Please try a different browser.");
+    }
   };
 
   return (
@@ -139,20 +172,26 @@ export function SrtUploader({
               </p>
             </div>
 
-            <Input
+            {/* File input - using a more reliable approach */}
+            <input
               ref={fileInputRef}
               type="file"
               accept=".srt"
               onChange={handleFileChange}
-              className="hidden"
+              className="hidden" /* Hidden but still functional */
               disabled={disabled}
+              aria-label="Upload SRT file"
+              data-testid="srt-file-input"
             />
 
+            {/* More prominent upload button */}
             <Button
               onClick={triggerFileInput}
-              className="w-full max-w-xs"
+              className="w-full max-w-xs bg-emerald-600 hover:bg-emerald-700 text-white hover:text-white"
               disabled={disabled}
               size="lg"
+              type="button"
+              data-testid="upload-button"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -172,6 +211,18 @@ export function SrtUploader({
               </svg>
               Select SRT File
             </Button>
+            
+            {/* Fallback text link in case button doesn't work */}
+            <div className="mt-2">
+              <button 
+                onClick={triggerFileInput} 
+                className="text-sm text-blue-500 hover:text-blue-700 underline"
+                disabled={disabled}
+                type="button"
+              >
+                Click here if the button does not work
+              </button>
+            </div>
           </>
         )}
 
