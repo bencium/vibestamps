@@ -1,30 +1,10 @@
 [build]
-  command = "next build"
-  publish = ".next"
+  command = "npm run netlify-build"
+  publish = "out"
 
 [build.environment]
   NODE_VERSION = "20.x"  # For React 19 compatibility
   NEXT_TELEMETRY_DISABLED = "1"
-
-[[plugins]]
-  package = "@netlify/plugin-nextjs"
-
-# These redirects are crucial for Next.js 15 with App Router
-[[redirects]]
-  from = "/_next/static/*"
-  to = "/static/:splat"
-  status = 200
-
-[[redirects]]
-  from = "/_next/*"
-  to = "/.netlify/functions/_next/:splat"
-  status = 200
-
-[[redirects]]
-  from = "/*"
-  to = "/.netlify/functions/server"
-  status = 200
-  force = false
 
 # Force HTTPS
 [[redirects]]
@@ -32,3 +12,9 @@
   to = "https://:splat"
   status = 301
   force = true
+  
+# Handle SPA routing
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
