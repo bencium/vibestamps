@@ -7,6 +7,10 @@ const nextConfig = {
   },
   // Ensure trailing slashes for better compatibility
   trailingSlash: true,
+  // Ensure proper asset prefix for static hosting
+  assetPrefix: '',
+  // Use relative paths for assets
+  basePath: '',
 };
 
 module.exports = nextConfig;

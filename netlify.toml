@@ -13,9 +13,3 @@
   to = "https://:splat"
   status = 301
   force = true
-  
-# Handle SPA routing
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
