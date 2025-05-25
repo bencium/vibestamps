@@ -34,7 +34,12 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} ${doto.variable} antialiased`}>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+        <ThemeProvider 
+          attribute="class" 
+          defaultTheme="ghibli" 
+          enableSystem={false}
+          themes={['ghibli', 'ghibli-dark', 'youtube', 'youtube-dark', 'professional', 'professional-dark', 'sunset', 'sunset-dark', 'ocean', 'ocean-dark']}
+        >
           <GhibliBackground />
           {children}
         </ThemeProvider>

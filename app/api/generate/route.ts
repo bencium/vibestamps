@@ -116,84 +116,106 @@ export async function POST(request: Request) {
         ? `The video's maximum duration is ${maxTimestamp}. ANY TIMESTAMP BEYOND ${maxTimestamp} IS INVALID AND MUST NOT BE INCLUDED IN YOUR RESPONSE. Only generate timestamps within the range of 00:00 to ${maxTimestamp}.`
         : "";
 
-    // Create a system prompt that explains what we want from the model
+    // Create an enhanced system prompt for better key moment detection
     const systemPrompt = `
-      # Instructions for Generating Concise Video Timestamps from a Transcript
+      # Enhanced Video Timestamp Generation with Smart Key Moment Detection
 
-These instructions aim to generate precise, high-level timestamps for a video, focusing on key topics and demonstrations rather than every single sentence.
+Generate precise, intelligent timestamps for video content with enhanced key moment detection and categorization.
 
-**IMPORTANT VIDEO LENGTH CONSTRAINT: ${videoEndTimeInfo}**
+**CRITICAL VIDEO LENGTH CONSTRAINT: ${videoEndTimeInfo}**
 
-**Input:** A video transcript in SRT or VTT format.
+## Key Moment Detection Strategy
 
-**Output:** A list of timestamps and descriptions, formatted as follows:
+Analyze the transcript for these high-value moments:
 
-🕒 Key moments:
-00:00 [Exact 2-5 word hook]
-MM:SS [Specific, action-oriented description]
-...
-MM:SS [Specific final topic]
+### 🎬 **Structural Moments**
+- **Opening Hook:** First 30 seconds - compelling introduction or teaser
+- **Topic Transitions:** Clear shifts between major subjects (look for "now," "next," "let's move to")
+- **Conclusions:** Summaries, takeaways, or wrap-up segments
 
-**Process:**
+### 🔥 **Content Peaks**
+- **Demonstrations:** Hands-on examples, live coding, or practical applications
+- **"Aha" Moments:** Key insights, breakthroughs, or important revelations
+- **Problem-Solution Pairs:** When issues are identified and solutions provided
+- **Visual Aids:** References to charts, diagrams, or on-screen elements
 
-1. **Video Length:** The video length is ${maxTimestamp}. Do not generate any timestamps beyond ${maxTimestamp} under any circumstances.
+### 💡 **Learning Milestones**
+- **Concept Introductions:** First mention of important terms or ideas
+- **Complex Explanations:** Detailed breakdowns of difficult topics
+- **Examples & Case Studies:** Real-world applications or scenarios
+- **Tips & Best Practices:** Actionable advice or expert recommendations
 
-2. **Target Timestamp Quantity:** (Crucial Adjustment) Aim for a more manageable number of timestamps, aiming for a range of **5-12 timestamps** for the entire video, regardless of length. This is crucial for conciseness and to prevent an overly long list. Don't be afraid to be more selective.
+### 🎯 **Engagement Signals**
+- **Questions Posed:** Direct questions to audience or rhetorical queries
+- **Emotional Language:** Excitement, emphasis, or passionate delivery
+- **Interactive Elements:** Polls, calls-to-action, or audience participation
+- **Surprising Information:** Unexpected facts, statistics, or revelations
 
-3. **Content Analysis:** Analyze the transcript to identify major themes, demonstrations, and transitions. Focus on:
+## Enhanced Output Format
 
-   - **Introduction/Overview:** The start of the video, setting the stage.
-   - **Key Functional Demonstrations:** Precise moments where specific functions (generate text, generate object, etc.) are demonstrated with code.
-   - **Topic Shifts:** Significant transitions in the discussion (e.g., moving from theoretical discussion to practical coding examples).
-   - **Complex Concepts Explained:** Instances where complex concepts (like Zod schemas, tools, or generative UI) are introduced or clarified.
-   - **Example Builds/Demonstrations:** When code examples are presented and executed, highlighting the use of various functions.
-   - **Chatbot Interaction:** Any segment where the chatbot is discussed, or its construction and interaction are demonstrated.
-
-4. **Timestamp Selection:** Choose timestamps that align with the key moments identified. Aim for accuracy within ±5 seconds, prioritizing the overall flow and message rather than microscopic precision.
-
-5. **Description Generation:** Create concise descriptions (ideally 2-5 words) highlighting the core topic, for example:
-
-   - **Action-oriented verbs:** Start with verbs to emphasize the actions (e.g., "Demonstrating," "Explaining," "Introducing").
-   - **Key Words:** Capture the essence of the segment using keywords directly related to the content (e.g., "AI SDK," "Generative UI," "Zod schemas").
-   - **Concise phrasing:** Avoid lengthy descriptions; focus on conveying the main idea (e.g., "Chatbot development," "Building AI application").
-
-6. **Formatting and Structure:** Ensure timestamps are ordered chronologically.
-
-7. **Review and Refinement:** Thoroughly review to ensure:
-
-   - **Accuracy:** Ensure the descriptions accurately reflect the content at the given timestamp.
-   - **Conciseness:** Maintain the 2-5 word guideline for descriptions.
-   - **Consistency:** Maintain a consistent style and level of detail across all descriptions.
-   - **Relevance:** Prioritize timestamps representing significant concepts or demonstrations, avoiding redundant or minor details.
-
-**Example (improved formatting and descriptions):**
-
-\`\`\`
-🕒 Key Moments:
-00:00 Introduction and overview of AI SDK
-07:59 Explaining AI SDK capabilities
-16:16 Demonstrating generate text function
-29:59 Introducing Zod schemas for data extraction
-52:20 Building chatbot with AI SDK
-1:04:22 Demonstrating generative UI
-1:29:42 Best practices and tips for using SDK
-1:49:55 AI chatbot template showcase
-2:09:55 Final thoughts and next steps
-\`\`\`
-
-**Important Considerations for Long Videos:**
-
-* **Segmentation:** Divide the video into logical sections if the video is very long. This allows you to target specific sections.
-* **Contextual Keywords:** Incorporate keywords that reflect the context of the overall presentation.
-
-By following these guidelines, you can create a list of timestamps that effectively and concisely reflect the video's key moments and allow viewers to quickly navigate to the relevant parts.
-
-Now analyze the following transcript and generate timestamps following this format:
+Generate 5-12 strategically selected timestamps with smart categorization:
 
 🕒 Key moments:
-00:00 [2-5 word hook]
-MM:SS [Action-oriented description]
-...
+00:00 [INTRO] Compelling opening hook
+MM:SS [DEMO] Hands-on demonstration title
+MM:SS [CONCEPT] Key concept explanation
+MM:SS [TIP] Important best practice
+MM:SS [EXAMPLE] Real-world application
+MM:SS [CONCLUSION] Main takeaways
+
+## Analysis Framework
+
+1. **Video Length:** ${maxTimestamp} - NO TIMESTAMPS BEYOND THIS TIME
+
+2. **Density Optimization:** 
+   - Short videos (0-10 min): 3-6 timestamps
+   - Medium videos (10-30 min): 5-9 timestamps  
+   - Long videos (30+ min): 7-12 timestamps
+
+3. **Smart Timing:** 
+   - Prioritize moments 10-30 seconds BEFORE key content starts
+   - Account for setup time in demonstrations
+   - Target natural pause points in speech
+
+4. **Description Quality:**
+   - Lead with action verbs ("Building," "Explaining," "Demonstrating")
+   - Include specific technologies/tools mentioned
+   - Use present tense for immediacy
+   - Maximum 6 words for mobile-friendly viewing
+
+5. **Category Assignment:**
+   - [INTRO] - Opening, introduction, overview
+   - [DEMO] - Live demonstrations, hands-on examples
+   - [CONCEPT] - Theory, explanations, definitions
+   - [TIP] - Best practices, recommendations, advice
+   - [EXAMPLE] - Case studies, real-world applications
+   - [TOOL] - Software, technology, or resource introduction
+   - [Q&A] - Questions, problems, troubleshooting
+   - [CONCLUSION] - Summaries, wrap-up, next steps
+
+6. **Quality Validation:**
+   - Each timestamp must advance viewer understanding
+   - Avoid redundant or overlapping content
+   - Ensure logical progression through material
+   - Verify timestamps capture the most valuable 15-20% of content
+
+## Enhanced Example Output
+
+\`\`\`
+🕒 Key moments:
+00:00 [INTRO] Welcome and project overview
+02:45 [CONCEPT] Understanding API fundamentals
+07:22 [DEMO] Building first API endpoint
+12:18 [TIP] Authentication best practices
+18:55 [EXAMPLE] Real-world use case
+25:33 [TOOL] Introducing testing framework
+31:07 [Q&A] Common debugging issues
+37:42 [CONCLUSION] Next steps and resources
+\`\`\`
+
+Now analyze the transcript and generate intelligent timestamps with categories based on content value and viewer utility:
+
+🕒 Key moments:
     `;
 
     // Use the model with fallback middleware
