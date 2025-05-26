@@ -1,5 +1,5 @@
-import { MAX_FILE_SIZE } from "@/lib/constants";
 import { generateApiRequestSchema } from "@/lib/schemas";
+import { MAX_FILE_SIZE } from "@/lib/constants";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { streamText, wrapLanguageModel, type LanguageModelV1Middleware } from "ai";
 import { NextResponse } from "next/server";
@@ -51,10 +51,14 @@ const modelWithFallback = wrapLanguageModel({
 });
 
 export async function POST(request: Request) {
+  console.log("API route called: /api/generate");
   try {
     // Check request size before parsing
     const contentLength = request.headers.get("content-length");
+    console.log("Content length:", contentLength);
+    
     if (contentLength && parseInt(contentLength) > MAX_FILE_SIZE) {
+      console.error(`Request too large: ${contentLength} bytes. Max: ${MAX_FILE_SIZE} bytes`);
       return NextResponse.json(
         { error: `Request too large. Maximum size is ${MAX_FILE_SIZE / 1024}KB` },
         { status: 413 } // 413 Payload Too Large
@@ -218,15 +222,45 @@ Now analyze the transcript and generate intelligent timestamps with categories b
 🕒 Key moments:
     `;
 
-    // Use the model with fallback middleware
-    const { textStream } = streamText({
-      model: modelWithFallback,
-      prompt: `${systemPrompt}\n\nHere is the transcript content from an SRT file. Please analyze it and generate meaningful timestamps with summaries:\n\n${srtContent}`,
-      temperature: 0.1,
-      maxTokens: 1500,
-    });
-
-    return new Response(textStream);
+    console.log("Preparing to generate text with AI model");
+    console.log("API Key present:", !!process.env.GOOGLE_API_KEY);
+    console.log("SRT content length:", srtContent.length);
+    console.log("Using model with fallback middleware");
+    
+    try {
+      // Use the model with fallback middleware
+      const { textStream } = streamText({
+        model: modelWithFallback,
+        prompt: `${systemPrompt}\n\nHere is the transcript content from an SRT file. Please analyze it and generate meaningful timestamps with summaries:\n\n${srtContent}`,
+        temperature: 0.1,
+        maxTokens: 1500,
+      });
+      
+      console.log("Text stream created successfully");
+      
+      // Create a readable stream that we can log
+      const stream = new ReadableStream({
+        async start(controller) {
+          try {
+            console.log("Starting to read from text stream");
+            for await (const chunk of textStream) {
+              console.log("Received chunk:", chunk.substring(0, 50) + "...");
+              controller.enqueue(new TextEncoder().encode(chunk));
+            }
+            console.log("Stream completed successfully");
+            controller.close();
+          } catch (error) {
+            console.error("Error in stream processing:", error);
+            controller.error(error);
+          }
+        },
+      });
+      
+      return new Response(stream);  
+    } catch (streamError) {
+      console.error("Error creating text stream:", streamError);
+      return NextResponse.json({ error: "Failed to create AI text stream" }, { status: 500 });
+    }
   } catch (error) {
     console.error("Error processing request:", error);
     return NextResponse.json({ error: "Failed to process request" }, { status: 500 });
