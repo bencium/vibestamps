@@ -93,12 +93,25 @@ export function ThemeToggle() {
   const [showThemes, setShowThemes] = useState(false);
   const { theme, setTheme } = useTheme();
 
+  // Enhanced mounting effect with debugging
   useEffect(() => {
+    console.log("Theme toggle mounting, current theme:", theme);
     setMounted(true);
-  }, []);
+    
+    // Log theme changes for debugging
+    const logTheme = () => {
+      console.log("Theme changed to:", document.documentElement.classList.contains("dark") ? "dark" : "light");
+    };
+    
+    // Add listener to track theme changes
+    window.addEventListener("theme-change", logTheme);
+    
+    return () => window.removeEventListener("theme-change", logTheme);
+  }, [theme]);
 
+  // Safely handle pre-mount state
   if (!mounted) {
-    return <div className="w-10 h-10"></div>;
+    return <div className="w-10 h-10 bg-transparent" aria-hidden="true"></div>;
   }
 
   const currentTheme = themes.find(t => t.value === theme) || themes[0];
@@ -130,7 +143,14 @@ export function ThemeToggle() {
                   variant={theme === themeOption.value ? "default" : "ghost"}
                   className="justify-start h-auto p-3 w-full"
                   onClick={() => {
-                    setTheme(themeOption.value);
+                    console.log("Setting theme to:", themeOption.value);
+                    try {
+                      setTheme(themeOption.value);
+                      // Dispatch custom event for logging
+                      window.dispatchEvent(new CustomEvent("theme-change"));
+                    } catch (err) {
+                      console.error("Error setting theme:", err);
+                    }
                     setShowThemes(false);
                   }}
                 >

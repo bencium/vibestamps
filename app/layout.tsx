@@ -1,6 +1,6 @@
 import GhibliBackground from "@/components/ui/ghibli-background";
 import type { Metadata } from "next";
-import { ThemeProvider } from "next-themes";
+import { ThemeProvider } from "@/components/providers/theme-provider";
 import { Doto, Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -34,12 +34,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} ${doto.variable} antialiased`}>
-        <ThemeProvider 
-          attribute="class" 
-          defaultTheme="ghibli" 
-          enableSystem={false}
-          themes={['ghibli', 'ghibli-dark', 'youtube', 'youtube-dark', 'professional', 'professional-dark', 'sunset', 'sunset-dark', 'ocean', 'ocean-dark']}
-        >
+        <ThemeProvider>
           <GhibliBackground />
           {children}
         </ThemeProvider>
